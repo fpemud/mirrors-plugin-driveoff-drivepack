@@ -128,7 +128,7 @@ class _Util:
             "data": {
                 "progress": progress,
             },
-        }).encoding("utf-8"))
+        }).encode("utf-8"))
 
     @staticmethod
     def error_occured(sock, exc_info):
@@ -137,7 +137,7 @@ class _Util:
             "data": {
                 "exc_info": "abc",
             },
-        }).encoding("utf-8"))
+        }).encode("utf-8"))
 
     @staticmethod
     def randomSorted(tlist):
