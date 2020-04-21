@@ -24,7 +24,7 @@ PROGRESS_STAGE_2 = 79
 def main():
     sock = _Util.connect()
     try:
-        dataDir = sys.argv[1]
+        dataDir = json.loads(sys.argv[1])["data-directory"]
         linkDict = dict()
         fnSet = set()
 
@@ -52,7 +52,7 @@ def main():
         i = 1
         total = len(linkDict)
         for filename, url in _Util.randomSorted(linkDict.items()):
-            fullfn = os.path.join(libmirrors.get_data_dir(), filename)
+            fullfn = os.path.join(dataDir, filename)
             if not os.path.exists(fullfn) or _Util.shellCallWithRetCode("/usr/bin/7z t %s" % (fullfn))[0] != 0:
                 print("Download file \"%s\"." % (filename))
 
@@ -67,9 +67,8 @@ def main():
 
                 # download
                 tmpfn = fullfn + ".tmp"
-                logFile = os.path.join(libmirrors.get_log_dir(), "wget.log")
                 while True:
-                    _Util.shellCall("/usr/bin/wget -O \"%s\" \"%s\" >\"%s\" 2>&1" % (tmpfn, downloadUrl, logFile))
+                    _Util.shellCall("/usr/bin/wget -O \"%s\" \"%s\"" % (tmpfn, downloadUrl))
                     # gigabase may show downloading page twice, re-get the real download url
                     if magic.detect_from_filename(tmpfn).mime_type == "text/html":
                         with open(tmpfn, "r") as f:
@@ -92,21 +91,21 @@ def main():
             i += 1
 
         # clear old files in cache
-        for fn in (set(os.listdir(libmirrors.get_data_dir())) - fnSet):
+        for fn in (set(os.listdir(dataDir)) - fnSet):
             print("Remove old file \"%s\"." % (fn))
-            fullfn = os.path.join(libmirrors.get_data_dir(), fn)
+            fullfn = os.path.join(dataDir, fn)
             os.unlink(fullfn)
 
         # recheck files
         # it seems sometimes wget download only partial files but there's no error
         for fn in fnSet:
-            fullfn = os.path.join(libmirrors.get_data_dir(), fn)
+            fullfn = os.path.join(dataDir, fn)
             if _Util.shellCallWithRetCode("/usr/bin/7z t %s" % (fullfn))[0] != 0:
                 raise Exception("file %s is not valid, strange?!" % (fn))
 
         # report full progress
         _Util.progress_changed(sock, 100)
-    except:
+    except Exception:
         _Util.error_occured(sock, sys.exc_info())
         raise
     finally:
