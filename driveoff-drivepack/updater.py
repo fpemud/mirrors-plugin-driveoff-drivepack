@@ -127,16 +127,18 @@ class _Util:
             "data": {
                 "progress": progress,
             },
-        }).encoding("utf-8"))
+        }).encode("utf-8"))
+        sock.send(b'\n')
 
     @staticmethod
     def error_occured(sock, exc_info):
         sock.send(json.dumps({
-            "message": "error_occured",
+            "message": "error",
             "data": {
                 "exc_info": "abc",
             },
-        }).encoding("utf-8"))
+        }).encode("utf-8"))
+        sock.send(b'\n')
 
     @staticmethod
     def randomSorted(tlist):
