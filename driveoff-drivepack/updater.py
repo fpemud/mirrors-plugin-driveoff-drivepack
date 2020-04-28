@@ -22,7 +22,7 @@ PROGRESS_STAGE_2 = 79
 
 
 def main():
-    sock = _Util.connect()
+    sock = MUtil.connect()
     try:
         dataDir = json.loads(sys.argv[1])["data-directory"]
         linkDict = dict()
@@ -34,7 +34,7 @@ def main():
         for i in range(1, MAX_PAGE):
             found = False
             url = "http://www.gigabase.com/folder/cbcv8AZeKsHjAkenvVrjPQBB?page=%d" % (i)
-            root = _Util.getWebPageElementTree(url)
+            root = Util.getWebPageElementTree(url)
             for elem in root.xpath(".//a"):
                 if elem.text is None:
                     continue
@@ -44,22 +44,22 @@ def main():
                 found = True
             if not found:
                 break
-            _Util.progress_changed(sock, PROGRESS_STAGE_1 * i // MAX_PAGE)
+            MUtil.progress_changed(sock, PROGRESS_STAGE_1 * i // MAX_PAGE)
         print("File list fetched, total %d files." % (len(linkDict)))
-        _Util.progress_changed(sock, PROGRESS_STAGE_1)
+        MUtil.progress_changed(sock, PROGRESS_STAGE_1)
 
         # download driver pack file one by one
         i = 1
         total = len(linkDict)
-        for filename, url in _Util.randomSorted(linkDict.items()):
+        for filename, url in Util.randomSorted(linkDict.items()):
             fullfn = os.path.join(dataDir, filename)
-            if not os.path.exists(fullfn) or _Util.shellCallWithRetCode("/usr/bin/7z t %s" % (fullfn))[0] != 0:
+            if not os.path.exists(fullfn) or Util.shellCallWithRetCode("/usr/bin/7z t %s" % (fullfn))[0] != 0:
                 print("Download file \"%s\"." % (filename))
 
                 # get the real download url, gigabase sucks
                 downloadUrl = None
                 if True:
-                    for elem in _Util.getWebPageElementTree(url).xpath(".//a"):
+                    for elem in Util.getWebPageElementTree(url).xpath(".//a"):
                         if elem.text == "Download file":
                             downloadUrl = elem.attrib["href"]
                             break
@@ -68,7 +68,7 @@ def main():
                 # download
                 tmpfn = fullfn + ".tmp"
                 while True:
-                    _Util.shellCall("/usr/bin/wget -O \"%s\" \"%s\"" % (tmpfn, downloadUrl))
+                    Util.shellCall("/usr/bin/wget -O \"%s\" \"%s\"" % (tmpfn, downloadUrl))
                     # gigabase may show downloading page twice, re-get the real download url
                     if magic.detect_from_filename(tmpfn).mime_type == "text/html":
                         with open(tmpfn, "r") as f:
@@ -87,7 +87,7 @@ def main():
                 print("File \"%s\" exists." % (filename))
 
             fnSet.add(filename)
-            _Util.progress_changed(sock, PROGRESS_STAGE_1 + PROGRESS_STAGE_2 * i // total)
+            MUtil.progress_changed(sock, PROGRESS_STAGE_1 + PROGRESS_STAGE_2 * i // total)
             i += 1
 
         # clear old files in cache
@@ -100,19 +100,16 @@ def main():
         # it seems sometimes wget download only partial files but there's no error
         for fn in fnSet:
             fullfn = os.path.join(dataDir, fn)
-            if _Util.shellCallWithRetCode("/usr/bin/7z t %s" % (fullfn))[0] != 0:
+            if Util.shellCallWithRetCode("/usr/bin/7z t %s" % (fullfn))[0] != 0:
                 raise Exception("file %s is not valid, strange?!" % (fn))
 
         # report full progress
-        _Util.progress_changed(sock, 100)
-    except Exception:
-        _Util.error_occured(sock, sys.exc_info())
-        raise
+        MUtil.progress_changed(sock, 100)
     finally:
         sock.close()
 
 
-class _Util:
+class MUtil:
 
     @staticmethod
     def connect():
@@ -130,15 +127,8 @@ class _Util:
         }).encode("utf-8"))
         sock.send(b'\n')
 
-    @staticmethod
-    def error_occured(sock, exc_info):
-        sock.send(json.dumps({
-            "message": "error",
-            "data": {
-                "exc_info": "abc",
-            },
-        }).encode("utf-8"))
-        sock.send(b'\n')
+
+class Util:
 
     @staticmethod
     def randomSorted(tlist):
