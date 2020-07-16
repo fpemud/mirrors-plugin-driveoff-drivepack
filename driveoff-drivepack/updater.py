@@ -24,7 +24,7 @@ PROGRESS_STAGE_2 = 79
 def main():
     sock = MUtil.connect()
     try:
-        dataDir = json.loads(sys.argv[1])["data-directory"]
+        dataDir = json.loads(sys.argv[1])["storage-file"]["data-directory"]
         linkDict = dict()
         fnSet = set()
 
