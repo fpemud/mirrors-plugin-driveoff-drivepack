@@ -10,10 +10,10 @@ import json
 import magic
 import random
 import certifi
-import socket
 import subprocess
 import lxml.html
 import urllib.request
+import mirrors.plugin
 
 
 MAX_PAGE = 10
@@ -22,8 +22,7 @@ PROGRESS_STAGE_2 = 79
 
 
 def main():
-    sock = MUtil.connect()
-    try:
+    with mirrors.plugin.ApiClient() as sock:
         dataDir = json.loads(sys.argv[1])["storage-file"]["data-directory"]
         linkDict = dict()
         fnSet = set()
@@ -44,9 +43,9 @@ def main():
                 found = True
             if not found:
                 break
-            MUtil.progress_changed(sock, PROGRESS_STAGE_1 * i // MAX_PAGE)
+            sock.progress_changed(PROGRESS_STAGE_1 * i // MAX_PAGE)
         print("File list fetched, total %d files." % (len(linkDict)))
-        MUtil.progress_changed(sock, PROGRESS_STAGE_1)
+        sock.progress_changed(PROGRESS_STAGE_1)
 
         # download driver pack file one by one
         i = 1
@@ -87,7 +86,7 @@ def main():
                 print("File \"%s\" exists." % (filename))
 
             fnSet.add(filename)
-            MUtil.progress_changed(sock, PROGRESS_STAGE_1 + PROGRESS_STAGE_2 * i // total)
+            sock.progress_changed(PROGRESS_STAGE_1 + PROGRESS_STAGE_2 * i // total)
             i += 1
 
         # clear old files in cache
@@ -104,28 +103,7 @@ def main():
                 raise Exception("file %s is not valid, strange?!" % (fn))
 
         # report full progress
-        MUtil.progress_changed(sock, 100)
-    finally:
-        sock.close()
-
-
-class MUtil:
-
-    @staticmethod
-    def connect():
-        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        sock.connect("/run/mirrors/api.socket")
-        return sock
-
-    @staticmethod
-    def progress_changed(sock, progress):
-        sock.send(json.dumps({
-            "message": "progress",
-            "data": {
-                "progress": progress,
-            },
-        }).encode("utf-8"))
-        sock.send(b'\n')
+        sock.progress_changed(100)
 
 
 class Util:
