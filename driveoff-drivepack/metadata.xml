@@ -2,7 +2,7 @@
 <plugin id="driveoff-drivepack">
   <mirror-site id="driveoff-drivepack">
     <name>Driveoff Driver Pack</name>
-    <storage>file</storage>
+    <storage type="file"></storage>
     <advertiser>
       <interface>file:http</interface>
       <interface>file:ftp</interface>
