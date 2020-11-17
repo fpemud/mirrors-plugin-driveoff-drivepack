@@ -13,6 +13,7 @@
     <updater>
       <executable>updater.py</executable>
       <schedule type="interval">1w</schedule>
+      <retry-after-failure type="interval">1d</retry-after-failure>
     </updater>
   </mirror-site>
 </plugin>
