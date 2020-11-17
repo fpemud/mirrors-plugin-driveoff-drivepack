@@ -12,9 +12,7 @@
     </initializer>
     <updater>
       <executable>updater.py</executable>
-      <scheduler>
-        <interval>1w</interval>
-      </scheduler>
+      <schedule type="interval">1w</schedule>
     </updater>
   </mirror-site>
 </plugin>
