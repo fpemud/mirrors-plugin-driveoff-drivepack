@@ -2,11 +2,9 @@
 <plugin id="driveoff-drivepack">
   <mirror-site id="driveoff-drivepack">
     <name>Driveoff Driver Pack</name>
-    <storage type="file"></storage>
-    <advertiser>
-      <interface>file:http</interface>
-      <interface>file:ftp</interface>
-    </advertiser>
+    <storage type="file"/>
+    <advertiser type="http"/>
+    <advertiser type="ftp"/>
     <initializer>
       <executable>updater.py</executable>
     </initializer>
