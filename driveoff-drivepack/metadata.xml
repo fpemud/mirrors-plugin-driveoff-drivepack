@@ -3,7 +3,7 @@
   <mirror-site id="driveoff-drivepack">
     <name>Driveoff Driver Pack</name>
     <storage type="file"/>
-    <advertiser type="http"/>
+    <advertiser type="httpdir"/>
     <advertiser type="ftp"/>
     <initializer>
       <executable>updater.py</executable>
