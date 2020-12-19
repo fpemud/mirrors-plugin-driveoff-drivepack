@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<plugin id="driveoff-drivepack">
-  <mirror-site id="driveoff-drivepack">
-    <name>Driveoff Driver Pack</name>
-    <storage type="file"/>
-    <advertiser type="httpdir"/>
-    <advertiser type="ftp"/>
-    <initializer>
-      <executable>updater.py</executable>
-    </initializer>
-    <updater>
-      <executable>updater.py</executable>
-      <schedule type="interval">1w</schedule>
-      <retry-after-failure type="interval">1d</retry-after-failure>
-    </updater>
-  </mirror-site>
-</plugin>
+<mirror-site id="driveoff-drivepack">
+  <name>Driveoff Driver Pack</name>
+  <storage type="file"/>
+  <advertiser type="httpdir"/>
+  <advertiser type="ftp"/>
+  <initializer>
+    <executable>updater.py</executable>
+  </initializer>
+  <updater>
+    <executable>updater.py</executable>
+    <schedule type="interval">1w</schedule>
+    <retry-after-failure type="interval">1d</retry-after-failure>
+  </updater>
+</mirror-site>
