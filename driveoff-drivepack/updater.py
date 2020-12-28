@@ -3,10 +3,8 @@
 
 import os
 import io
-import sys
 import gzip
 import time
-import json
 import magic
 import random
 import certifi
@@ -23,7 +21,7 @@ PROGRESS_STAGE_2 = 79
 
 def main():
     with mirrors.plugin.ApiClient() as sock:
-        dataDir = json.loads(sys.argv[1])["storage-file"]["data-directory"]
+        dataDir = mirrors.plugin.params["storage-file"]["data-directory"]
         linkDict = dict()
         fnSet = set()
 
